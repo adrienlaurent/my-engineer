@@ -71,7 +71,9 @@ def get_git_tracked_files(root_dir: str) -> List[str]:
         
         text_files = []
         for file_path in all_files:
-            if is_text_file(file_path) and not file_path.endswith(('package-lock.json', '.svg', '.jpg', '.jpeg', '.png', '.gif')):
+            if (is_text_file(file_path) and
+                not file_path.endswith(('package-lock.json', '.svg', '.jpg', '.jpeg', '.png', '.gif', 'file_summaries.yaml')) and
+                not any(folder in file_path for folder in ['.venv/', 'runs/', 'node_modules/'])):
                 text_files.append(file_path)
         
         logger.info(f"Found {len(text_files)} text files out of {len(all_files)} git-tracked files")
@@ -101,7 +103,17 @@ def is_text_file(file_path: str) -> bool:
             return False
 
 def _manual_file_listing(root_dir: str) -> List[str]:
-    return [os.path.join(root, file) for root, _, files in os.walk(root_dir) for file in files if is_text_file(os.path.join(root, file))]
+    excluded_folders = ['.venv', 'runs', 'node_modules']
+    excluded_files = ['file_summaries.yaml', 'package-lock.json']
+    text_files = []
+    for root, dirs, files in os.walk(root_dir):
+        dirs[:] = [d for d in dirs if d not in excluded_folders]
+        for file in files:
+            if file not in excluded_files:
+                file_path = os.path.join(root, file)
+                if is_text_file(file_path) and not file_path.endswith(('.svg', '.jpg', '.jpeg', '.png', '.gif')):
+                    text_files.append(file_path)
+    return text_files
 
 def count_tokens(text):
     client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))

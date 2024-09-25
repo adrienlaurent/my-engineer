@@ -6,17 +6,25 @@ my-engineer works well in github codespaces, it's easy to try it out:
 
 
 ## Installation
+Locally
 ```
 python -m venv .venv
 source .venv/bin/activate
 pip install my-engineer
 ```
 
+Globally
+```
+brew install pipx
+pipx ensurepath
+pipx install my-engineer
+```
+
+
 ## Execution
 
 ```
 # must run at the root of your application
-source .venv/bin/activate
 my-engineer
 ```
 
