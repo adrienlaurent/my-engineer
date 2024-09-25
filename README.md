@@ -28,6 +28,8 @@ my-engineer
 - You have 5 minutes to continue a conversation before the Anthropic cache expires.
 - A log of the interaction with the LLM is created in the `runs/` folder.
 - The `file_summaries.yaml` file is only updated with new files. If you make significant changes to many files, delete it so it gets re-created.
+- After you've completed a conversation, commit all your changes. my-engineer will offer to create a new branch for the next batch of changes
+- Before you commit the changes from my-engineer, you can view all of them with COMMAND-SHIFT-P, then "Git: View Changes"
 
 ## Recommended Additions to .gitignore
 ```
