@@ -1,5 +1,8 @@
-My Engineer is an AI coding assistant that is good at creating or editing multiple files at a time.
+My Engineer is an AI coding assistant that is good at editing multiple files at a time.
 
+
+## Github codespaces   
+my-engineer works well in github codespaces, it's easy to try it out: 
 
 
 ## Installation
@@ -13,12 +16,13 @@ pip install my-engineer
 
 ```
 # must run at the root of your application
+source .venv/bin/activate
 my-engineer
 ```
 
 ## How to use
 
-- my-engineer will open a blank vscode file, enter your instructions ("write a complete next.js application" or "add comments to all files in my codebase"). **Processing will start when you close the file** (⌘-W).
+- my-engineer will open a blank vscode file, enter your instructions ("write a complete next.js application" or "add comments to all files in my codebase"). **Processing will start when you close the file**.
 
 
 # Things to know:
@@ -32,6 +36,7 @@ my-engineer
 # Recommended addition to .gitignore
 
 ```
+.venv
 runs/
 file_summaries.yaml
 ```
