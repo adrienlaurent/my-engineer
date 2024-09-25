@@ -4,7 +4,8 @@ from typing import Dict
 
 class Settings:
     def __init__(self, env_file: str = '.env'):
-        load_dotenv()
+        load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
+
 
     def get(self, key: str, default: str = None) -> str:
         return os.getenv(key, default)

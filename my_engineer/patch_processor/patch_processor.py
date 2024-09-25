@@ -4,7 +4,6 @@ from ..llm_providers import get_provider
 from ..shared_utils.logger import setup_logger
 import traceback
 import filecmp
-from tempfile import NamedTemporaryFile
 
 class PatchProcessor:
     def __init__(self, run_dir):
@@ -12,6 +11,7 @@ class PatchProcessor:
         haiku_provider = get_provider('haiku', run_dir)
         self.__patch_service = PatchService(logger, haiku_provider, run_dir=run_dir)
         self.logger = setup_logger("patch_processor")
+        self.run_dir = run_dir
 
     def apply_patch(self, original_content: str, patch_content: str, file_path: str) -> str:
         """
@@ -56,19 +56,14 @@ class PatchProcessor:
                         updated_lines[0] = original_first_line
                         updated_content = '\n'.join(updated_lines)
 
-                # Write to a temporary file first
-                with NamedTemporaryFile(mode='w', delete=False) as temp_file:
-                    temp_file.write(updated_content)
-                    temp_path = temp_file.name
-
-                # Verify the changes
-                if not filecmp.cmp(full_path, temp_path, shallow=False):
-                    # Files are different, so we proceed with the update
-                    os.replace(temp_path, full_path)
+                # Compare the updated content with the original content
+                if updated_content != original_content:
+                    # Content is different, so we proceed with the update
+                    with open(full_path, 'w') as f:
+                        f.write(updated_content)
                     self.logger.info(f"Successfully updated file: {full_path}")
                 else:
-                    # Files are identical, no need to update
-                    os.unlink(temp_path)
+                    # Content is identical, no need to update
                     self.logger.info(f"No changes applied to file: {full_path}")
 
                 patch.processed_patch_path = full_path  # Mark as processed

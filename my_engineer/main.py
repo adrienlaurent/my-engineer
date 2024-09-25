@@ -33,7 +33,7 @@ import signal
 import sys
 from dotenv import load_dotenv, set_key
 
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
 
 # Add the project root to sys.path
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -176,7 +176,7 @@ def my_engineer_pipeline(prompt_file: Optional[str], include_tests: bool = False
 
 def main():
     # Load existing variables
-    load_dotenv()
+    load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
 
     # Check if current directory is a Git repository
     if not is_git_repo():
@@ -196,7 +196,7 @@ def main():
         console.print("[green]API key saved to .env file.[/green]")
         
         # Reload environment variables
-        load_dotenv()
+        load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
 
     if args.auto_fix_tests:
         if not args.include_tests:

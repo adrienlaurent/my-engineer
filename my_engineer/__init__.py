@@ -1,5 +1,4 @@
-def main():
-    from .main import main as _main
-    return _main()
+
+from .main import main as _main
 
 __all__ = ['main']

@@ -91,5 +91,5 @@ def read_requirements():
         logger.error(f"Error reading requirements file: {str(e)}")
         return f"Error reading requirements: {str(e)}"
 
-app_root = get_app_root()
-logger.info(f"MY ENGINEER Application root: {app_root}")
+# app_root = get_app_root()
+# logger.info(f"MY ENGINEER Application root: {app_root}")

@@ -1,0 +1,60 @@
+frontend_coding_standards:
+  general_principles:
+    modularity:
+      description: Design components and features as independent, reusable modules
+      importance: High
+    encapsulation:
+      description: Hide implementation details, expose clean interfaces for components
+      importance: High
+    testability:
+      description: Design code to be easily testable, especially for UI components
+      importance: High
+    extensibility:
+      description: Allow for easy addition or modification of functionality
+      importance: Medium
+    code_structure:
+      description: Prefer many small components and files over large, monolithic structures
+      importance: High
+
+  code_organization:
+    folder_structure:
+      - Organize components into logical folders (e.g., components, pages, hooks, utils)
+      - Use an index.js file in each folder to export public interfaces
+      - Place component-specific tests in a __tests__ folder within each component's folder
+      - Place integration tests in tests/integration at the project root
+    naming_conventions:
+      - Use PascalCase for component names
+      - Use camelCase for functions, methods, and variables
+      - Use UPPER_CASE for constants
+      - Use kebab-case for CSS class names and file names
+    file_structure:
+      - Keep component files focused on a single responsibility
+      - Break down large components into smaller, more manageable sub-components
+      - Prefer functional components over class components
+
+  error_handling:
+    principles:
+      - Implement error boundaries for catching and displaying errors
+      - Use try-catch blocks for async operations
+      - Provide informative error messages to users
+
+  configuration_management:
+    principles:
+      - Use environment variables for environment-specific configuration
+      - Use a .env file for local development
+      - Implement a centralized configuration management system
+
+  performance_optimization:
+    principles:
+      - Use React.memo for preventing unnecessary re-renders
+      - Implement code splitting and lazy loading for large applications
+      - Optimize images and assets
+
+  maintainability:
+    principles:
+      - Keep codebase clean and easy to understand
+      - Refactor regularly to improve code quality
+      - Document complex algorithms or business logic
+      - Follow the DRY (Don't Repeat Yourself) principle
+
+

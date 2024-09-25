@@ -3,9 +3,11 @@ from ..shared_models.chat_models import ConversationState
 from .src.chat_engine import ChatEngine
 from ..shared_utils.logger import setup_logger
 from dotenv import load_dotenv
+import os
 
 logger = setup_logger(__name__)
-load_dotenv()  # Load environment variables from .env file
+load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
+  # Load environment variables from .env file
 
 def main(test_mode=False):
     parser = argparse.ArgumentParser(description="LLM Prompter")

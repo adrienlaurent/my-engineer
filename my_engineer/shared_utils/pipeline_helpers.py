@@ -16,6 +16,7 @@ from ..shared_utils.test_runner.test_runner import check_test_results
 import re
 from ..shared_utils.config import get_config
 import traceback
+from colorama import Fore, Style
 
 logger = setup_logger("pipeline_helpers")
 
@@ -88,9 +89,11 @@ def get_prompt_content(run_dir: str, conversation_state: ConversationState) -> O
                 open(prompt_path, 'w').close()  # Create an empty file
                 logger.info(f"Created new empty prompt file: {prompt_path}")
 
+        print(Fore.CYAN + "Processing will start when you close the file that just opened." + Style.RESET_ALL)
         content = _read_and_edit_file(prompt_path)
         if not content:
             logger.info(f"Prompt file {prompt_file} is empty. Reopening for user input.")
+            print(Fore.CYAN + "Processing will start when you close the file that just opened." + Style.RESET_ALL)
             content = _read_and_edit_file(prompt_path)
         return content if content else None
     except Exception as e:

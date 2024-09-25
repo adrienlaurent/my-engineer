@@ -12,7 +12,7 @@ class PromptPostProcessor:
         self.haiku_provider = get_provider('haiku', run_dir=run_dir)
         self.post_processing_prompt = self._load_post_processing_prompt()
         self.is_test = is_running_tests()
-        load_dotenv()
+        load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
         self.post_process_char_limit = int(os.getenv('POST_PROCESS_CHAR_LIMIT', 100000))
 
     def _load_post_processing_prompt(self):
