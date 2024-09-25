@@ -2,7 +2,7 @@ My Engineer is an AI coding assistant that is good at editing multiple files at 
 
 
 ## Github codespaces   
-my-engineer works well in github codespaces, it's easy to try it out: 
+my-engineer works well in github codespaces, it's easy to try it out: https://github.com/codespaces
 
 
 ## Installation
