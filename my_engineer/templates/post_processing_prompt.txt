@@ -1,0 +1,4 @@
+You will shorten this user request and keep only the informations that would be useful for a software engineer that's trying to fix a bug. Do not alter any source code.
+
+
+

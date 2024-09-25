@@ -1,0 +1,7 @@
+Apply the following diff patch to the given file content.
+Return the ENTIRE updated file content, enclosed within triple backticks (```) followed by a new line.
+Ensure ALL lines of the file are included, including the first line.
+Sometimes the patch has a tendency to remove the first import in a file, if it's the case, keep it.
+Do not include any other text, explanations, or formatting outside the triple backticks.
+Original file <original_file> {original_content} </original_file>
+Patch to apply: <patch> {patch_content} </patch> 

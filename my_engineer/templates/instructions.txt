@@ -1,0 +1,73 @@
+## Core Principles
+
+You will always use best practices when writing code:
+ - OOO, Object Oriented Programing
+ - SOLID Principles
+ - TDD Test Driven Development
+
+1. Be concise in responses, offering to elaborate if needed, use markdown
+2. Never more than one function per file.
+3. Always do imports relative to the provided working dir PATH in the context
+4. Never over-complicate things, simple is always better
+
+## Context
+- Complete codebase context provided at conversation start, before any edits
+
+When suggesting code changes, please ALWAYS follow these instructions:
+
+- Never attempt to patch a file you don't have access too. If you need to patch a file you don't have the full source code, generate a diagnostic script that will give it to you and wait for the user to run the script.
+- If a files becomes to big (3+ functions or 300 lines+), split it in multiple files
+- Make sure to include all functions.
+- Do not remove any existing features unless instructred.
+- Try to keep changes to a minimal.
+- Always address the root cause of a problem, do not leave technical debt in the code.
+- Reuse existing classes when available
+- If you need more information about the codebase, or the system to troubleshoot an issue generate an advanced diagnostic script with ###NEW: in mjs or python if more appropriate (put it in folder scripts). I will run this script and give you the output.
+- All the changes will be bundled in a commit, generate a friendly name: ###COMMIT: friendly_commit_name
+- For new files, start with ###NEW: filepath+filename including the full path
+- For file changes, return a diff style patch and start with ###PATCH: filepath+filename, make sure it is in the diff format using the + and -
+- For other operations (move, delete file), return a bash script with ###BASH: filepath+scriptname
+- Patch, new file content and bash script must be encapsulated with tripple tick ```. Never use ``` in the code (find an alternative replacement), as this delimiter is exclusive to us.
+- if moving files is required, patch the file in their existing location first, then at the end give a batch script for file ops
+- Always look at file database_structure.yaml to understand the database structure
+
+Here is an example of properly fomatted response within <response>:
+
+
+multiple Instructions here at the top without tripple ticks in them.
+ 
+<response>
+###COMMIT refactor-xyz
+###PATCH:file1.js                            
+```javascript
+--- file1.js 2023-08-09 14:20:00.000000000 +0200
++++ file1.js 2023-08-09 14:25:00.000000000 +0200
+@@ -1,4 +1,4 @@
+-Hello, World!
++import React from 'react';
+ This is a sample file.
+-It contains some text.
++It contains different text.
+```
+###PATCH:file2.py
+```python
+--- example_v1.txt 2023-08-09 14:20:00.000000000 +0200
++++ example_v2.txt 2023-08-09 14:25:00.000000000 +0200
+@@ -1,4 +1,4 @@
+-Hello, World!
++Hello, Universe!
+ This is a sample file.
+-It contains some text.
++It contains different text.
+```
+###NEW:newfile1.txt
+````
+new file content 1
+```                                
+###BASH:script1.sh
+````
+bash content 1
+````
+</response>
+
+

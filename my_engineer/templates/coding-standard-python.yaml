@@ -1,0 +1,137 @@
+# My Coding Standards
+
+general_principles:
+  modularity:
+    description: Design systems with independent, interchangeable modules
+    importance: High
+  encapsulation:
+    description: Hide implementation details, expose clean interfaces
+    importance: High
+  testability:
+    description: Design code to be easily testable
+    importance: High
+  extensibility:
+    description: Allow for easy addition or modification of functionality
+    importance: Medium
+  code_structure:
+    description: Prefer many small functions, files, and folders over large, monolithic structures
+    importance: High
+
+code_organization:
+  folder_structure:
+    - Each main folder should have an __init__.py file
+    - __init__.py should contain instructions for usage without exposing source code
+    - Use __all__ to explicitly define public API
+    - Place module-specific tests in a 'tests' folder within each module
+    - Place integration tests in 'tests/integration_tests/' at the project root
+  naming_conventions:
+    - Use snake_case for functions, methods, and variables
+    - Use PascalCase for class names
+    - Use UPPER_CASE for constants
+    - Prefix private methods and attributes with a single underscore (_)
+    - Use double underscores (__) for name mangling when necessary
+  file_structure:
+    - Keep files short and focused on a single responsibility
+    - Break down large functions into smaller, more manageable functions
+    - Prefer multiple small files over fewer large files
+
+code_style:
+  general:
+    - Follow PEP 8 guidelines for Python code style
+    - Use 4 spaces for indentation (no tabs)
+    - Limit lines to 79 characters for code, 72 for docstrings/comments
+  imports:
+    - Use absolute imports
+    - Group imports in the order: standard library, third-party, local
+    - Use import statements for packages and modules only
+  documentation:
+    - Use docstrings for all public modules, functions, classes, and methods
+    - Follow Google-style docstring format
+    - Include usage examples in module-level docstrings
+    - Document manual command line testing procedures in __init__.py comments
+
+data_modeling:
+  principles:
+    - Use Pydantic for data modeling and validation
+    - Define data models as Pydantic BaseModel subclasses
+    - Implement data validation logic within the models
+    - Use type annotations for all function parameters and return values
+
+error_handling:
+  principles:
+    - Implement robust error handling and logging
+    - Use a centralized ErrorHandler class
+    - Provide informative error messages
+    - Use custom exceptions for application-specific errors
+
+testing:
+  unit_tests:
+    - Write comprehensive unit tests for each module
+    - Place unit tests in a 'tests' folder within each module
+    - Use pytest as the testing framework
+    - Aim for high test coverage (minimum 80%)
+  integration_tests:
+    - Write integration tests to verify interaction between components
+    - Place integration tests in 'tests/integration_tests/' at the project root
+  mocking:
+    - Use mock objects to isolate components during testing
+    - Prefer unittest.mock for creating mock objects
+  api_testing:
+    - Use VCR (vcrpy) for tests involving API calls
+    - Ensure VCR cassettes are properly managed and updated
+
+dependency_management:
+  principles:
+    - Use dependency injection to reduce coupling between components
+    - Clearly specify project dependencies in a requirements.txt file
+    - Consider using a virtual environment for each project
+
+configuration_management:
+  principles:
+    - Use a single .env file for environment variables
+    - Use environment variables for sensitive or environment-specific configuration
+    - Use configuration files (e.g., YAML, JSON) for other settings
+    - Implement a centralized configuration management system
+
+version_control:
+  guidelines:
+    - Use Git for version control
+    - Create a .gitignore file to exclude unnecessary files
+    - Use feature branches for development
+    - Write clear, descriptive commit messages
+    - Use pull requests for code reviews before merging
+
+collaboration:
+  guidelines:
+    - Maintain clear documentation of public interfaces for each module inside __init__.py
+    - Use code reviews to ensure adherence to coding standards
+    - Encourage clear and frequent communication among team members
+
+maintainability:
+  principles:
+    - Keep codebase clean and easy to understand
+    - Refactor regularly to improve code quality
+    - Document complex algorithms or business logic
+    - Follow the DRY (Don't Repeat Yourself) principle
+
+logging:
+  principles:
+    - Use a centralized logging system
+    - Include relevant context in log messages
+    - Use appropriate log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+
+data_storage:
+  principles:
+    - A local sqlite database is available if needed
+
+external_services:
+  llm_integration:
+    - Never call LLMs directly in application code
+    - Use the llm-providers package for all LLM interactions
+    - Abstract LLM calls behind a service layer
+
+other:
+ - do not use print for logs or command line notice, always use the shared logger
+
+api:
+ - all API created should respect the json:api standards
