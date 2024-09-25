@@ -77,24 +77,24 @@ def append_test_results_to_next_prompt(run_dir: str, test_results: str, next_tur
 def get_prompt_content(run_dir: str, conversation_state: ConversationState) -> Optional[str]:
     try:
         prompt_file = f"prompt_{conversation_state.turn_number}.md"
-        prompt_path = os.path.join(run_dir, prompt_file)
+        prompt_path = os.path.normpath(os.path.join(run_dir, prompt_file))
         if not os.path.exists(prompt_path):
-            # Create a new file with the template content if it's not empty
             template_content = _get_prompt_template()
-            if template_content:
-                with open(prompt_path, 'w') as new_prompt_file:
-                    new_prompt_file.write(template_content)
-                logger.info(f"Created new prompt file with template: {prompt_path}")
-            else:
-                open(prompt_path, 'w').close()  # Create an empty file
-                logger.info(f"Created new empty prompt file: {prompt_path}")
+            with open(prompt_path, 'w', encoding='utf-8') as new_prompt_file:
+                new_prompt_file.write(template_content or '')
+            logger.info(f"Created new prompt file: {prompt_path}")
 
         print(Fore.CYAN + "Processing will start when you close the file that just opened." + Style.RESET_ALL)
         content = _read_and_edit_file(prompt_path)
-        if not content:
-            logger.info(f"Prompt file {prompt_file} is empty. Reopening for user input.")
+        
+        max_attempts = 3
+        attempt = 0
+        while not content and attempt < max_attempts:
+            attempt += 1
+            logger.info(f"Prompt file {prompt_file} is empty. Reopening for user input (attempt {attempt}/{max_attempts}).")
             print(Fore.CYAN + "Processing will start when you close the file that just opened." + Style.RESET_ALL)
             content = _read_and_edit_file(prompt_path)
+
         return content if content else None
     except Exception as e:
         error_handler.handle_exception(e, "getting prompt content")
@@ -103,9 +103,16 @@ def get_prompt_content(run_dir: str, conversation_state: ConversationState) -> O
 def _read_and_edit_file(file_path: str) -> str:
     try:
         editor_command = get_editor_command()
-        subprocess.run([editor_command, '--wait', file_path])
-        with open(file_path, 'r') as f:
+        file_path = os.path.normpath(file_path)  # Normalize the path for the current OS
+        subprocess.run([editor_command, '--wait', file_path], check=True)
+        with open(file_path, 'r', encoding='utf-8') as f:
             return f.read().strip()
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error opening file in editor: {str(e)}")
+        return ""
+    except FileNotFoundError as e:
+        logger.error(f"File not found: {file_path}")
+        return ""
     except Exception as e:
         logger.error(f"Error reading and editing file: {str(e)}")
         return ""

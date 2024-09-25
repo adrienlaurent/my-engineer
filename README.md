@@ -20,6 +20,12 @@ pipx ensurepath
 pipx install my-engineer
 ```
 
+Globally (windows)
+```
+python3 -m pip install my-engineer
+python3 -m my_engineer
+```
+
 
 ## Execution
 ```
