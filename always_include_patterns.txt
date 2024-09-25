@@ -1,0 +1,2 @@
+# Patterns for files to always include in the smart context
+main.py
