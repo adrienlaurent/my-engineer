@@ -1,6 +1,6 @@
-from .src.chat_engine import ChatEngine
-from ..shared_models.chat_models import ConversationState
-from ..shared_utils.logger import setup_logger
+from my_engineer.llm_prompter.src.chat_engine import ChatEngine
+from my_engineer.shared_models.chat_models import ConversationState
+from my_engineer.shared_utils.logger import setup_logger
 
 class LLMPrompter:
     def __init__(self, provider_name: str = "claude", run_dir: str = None):

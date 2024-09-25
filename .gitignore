@@ -19,8 +19,8 @@ mock_run_dir/
 vcr_cassettes/
 fixtures/
 .DS_Store
-tests/
 dist/
 my_engineer.egg-info/
 build/
 file_summaries.yaml
+README-build.md
