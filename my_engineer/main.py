@@ -6,7 +6,7 @@ from .llm_prompter.llm_prompter import LLMPrompter
 from .instruction_processor.instruction_processor import InstructionProcessor
 from .patch_processor.patch_processor import PatchProcessor
 from .file_operator.file_operator import FileOperator
-from .shared_utils.tests.test_runner import run_unit_tests
+from .shared_utils.test_runner.test_runner import run_unit_tests
 from .shared_utils.git_utils import check_uncommitted_changes, merge_current_branch_to_main, is_git_repo
 from .shared_utils.pipeline_helpers import (
     setup_run_directory, get_prompt_content, create_git_branch, generate_instructions,

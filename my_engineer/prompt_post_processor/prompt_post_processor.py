@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from ..llm_providers import get_provider
 from ..shared_utils.logger import setup_logger
 from ..shared_utils.file_utils import empty_file, get_app_root
-from ..shared_utils.tests.test_utils import is_running_tests
+from ..shared_utils.test_runner.test_utils import is_running_tests
 
 class PromptPostProcessor:
     def __init__(self, run_dir=None):

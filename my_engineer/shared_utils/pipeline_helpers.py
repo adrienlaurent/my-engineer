@@ -12,7 +12,7 @@ from ..conversation_manager import ConversationManager
 from ..shared_models.chat_models import ConversationState, Message
 from ..shared_utils.error_handler import ErrorHandler
 from ..shared_models.chat_models import Message, MessageSequence, ConversationState
-from ..shared_utils.tests.test_runner import check_test_results
+from ..shared_utils.test_runner.test_runner import check_test_results
 import re
 from ..shared_utils.config import get_config
 import traceback

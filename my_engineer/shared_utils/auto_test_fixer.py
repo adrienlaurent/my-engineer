@@ -3,7 +3,7 @@ import os
 import re
 from typing import Optional
 from ..shared_utils.logger import setup_logger
-from ..shared_utils.tests.test_runner import run_unit_tests, check_test_results, get_first_failed_test
+from ..shared_utils.test_runner.test_runner import run_unit_tests, check_test_results, get_first_failed_test
 from ..shared_models.chat_models import ConversationState
 from ..shared_utils.pipeline_helpers import setup_run_directory
 from ..shared_utils.user_input import get_user_approval
