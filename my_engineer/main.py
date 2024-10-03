@@ -2,6 +2,8 @@ import os
 import sys
 import json
 from typing import Dict, Optional, Tuple
+from rich.prompt import Prompt
+from my_engineer.shared_utils.editor_utils import EDITOR_COMMANDS, get_editor_command
 from .llm_prompter.llm_prompter import LLMPrompter
 from .instruction_processor.instruction_processor import InstructionProcessor
 from .patch_processor.patch_processor import PatchProcessor
@@ -11,7 +13,7 @@ from .shared_utils.git_utils import check_uncommitted_changes, merge_current_bra
 from .shared_utils.pipeline_helpers import (
     setup_run_directory, get_prompt_content, create_git_branch, generate_instructions,
     process_instructions, process_patches, perform_file_operations, resume_from_file,
-    append_test_results_to_next_prompt, check_test_results, get_editor_command
+    append_test_results_to_next_prompt, check_test_results
 )
 from .shared_utils.file_utils import count_tokens_for_git_tracked_files, get_git_tracked_files
 from .shared_utils.auto_test_fixer import auto_fix_tests
@@ -197,6 +199,21 @@ def main():
         
         # Reload environment variables
         load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
+
+    # Ask for editor preference every time
+    editors = list(EDITOR_COMMANDS.keys())
+    for i, editor in enumerate(editors, 1):
+        console.print(f"{i}. {editor}")
+    
+    while True:
+        choice = Prompt.ask("Please choose your preferred editor")
+        if choice.isdigit() and 1 <= int(choice) <= len(editors):
+            editor_preference = editors[int(choice) - 1]
+            break
+        console.print("[red]Invalid choice. Please try again.[/red]")
+
+    # Set the editor in the config
+    get_config().set('editor', editor_preference)
 
     if args.auto_fix_tests:
         if not args.include_tests:
