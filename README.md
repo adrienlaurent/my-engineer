@@ -5,7 +5,7 @@ My Engineer is an AI coding assistant that excels at editing multiple files simu
 ## GitHub Codespaces
 My Engineer works well in GitHub Codespaces. It's easy to try it out: https://github.com/codespaces
 
-## Installation
+## Installation (from pip)
 Locally
 ```
 python -m venv .venv
@@ -26,6 +26,12 @@ python3 -m pip install my-engineer
 python3 -m my_engineer
 ```
 
+## Installation (from sources)
+
+```
+pip install -r requirements.txt
+python3 -m my_engineer
+```
 
 ## Execution
 ```
