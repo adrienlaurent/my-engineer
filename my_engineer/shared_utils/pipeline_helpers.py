@@ -24,9 +24,9 @@ error_handler = ErrorHandler(logger)
 
 def setup_run_directory(previous_run_dir: Optional[str] = None) -> str:
     try:
-        timestamp = subprocess.check_output(['date', '+%Y-%m-%d_%H-%M-%S']).decode().strip()
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         run_dir = os.path.join("runs", timestamp)
-        os.makedirs(run_dir)
+        os.makedirs(run_dir, exist_ok=True)
         logger.info(f"Created run directory: {run_dir}")
         initial_state = ConversationState(previous_run=previous_run_dir)
         ConversationManager.save_state(run_dir, initial_state)
@@ -38,7 +38,7 @@ def setup_run_directory(previous_run_dir: Optional[str] = None) -> str:
 def get_editor_command():
     config = get_config()
     if config.use_cursor:
-        return '/Applications/Cursor.app/Contents/MacOS/Cursor'
+        return 'cursor' if os.name != 'nt' else 'cursor.exe'
     else:
         return 'code'
 
@@ -77,24 +77,41 @@ def append_test_results_to_next_prompt(run_dir: str, test_results: str, next_tur
 def get_prompt_content(run_dir: str, conversation_state: ConversationState) -> Optional[str]:
     try:
         prompt_file = f"prompt_{conversation_state.turn_number}.md"
-        prompt_path = os.path.join(run_dir, prompt_file)
+        prompt_path = os.path.normpath(os.path.join(run_dir, prompt_file))
+        
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(prompt_path), exist_ok=True)
+        
         if not os.path.exists(prompt_path):
-            # Create a new file with the template content if it's not empty
-            template_content = _get_prompt_template()
-            if template_content:
-                with open(prompt_path, 'w') as new_prompt_file:
-                    new_prompt_file.write(template_content)
-                logger.info(f"Created new prompt file with template: {prompt_path}")
-            else:
-                open(prompt_path, 'w').close()  # Create an empty file
-                logger.info(f"Created new empty prompt file: {prompt_path}")
+            template_content = _get_prompt_template() or ''
+            with open(prompt_path, 'w', encoding='utf-8') as new_prompt_file:
+                new_prompt_file.write(template_content)
+            logger.info(f"Created new prompt file: {prompt_path}")
 
-        print(Fore.CYAN + "Processing will start when you close the file that just opened." + Style.RESET_ALL)
-        content = _read_and_edit_file(prompt_path)
-        if not content:
-            logger.info(f"Prompt file {prompt_file} is empty. Reopening for user input.")
-            print(Fore.CYAN + "Processing will start when you close the file that just opened." + Style.RESET_ALL)
-            content = _read_and_edit_file(prompt_path)
+        print(Fore.CYAN + f"Opening {prompt_path} for editing. Processing will start when you close the file." + Style.RESET_ALL)
+        
+        editor_command = get_editor_command()
+        if os.name == 'nt':  # Windows
+            subprocess.run([editor_command, '--wait', prompt_path], shell=True, check=True)
+        else:  # macOS and Linux
+            subprocess.run([editor_command, '--wait', prompt_path], check=True)
+        
+        with open(prompt_path, 'r', encoding='utf-8') as f:
+            content = f.read().strip()
+        
+        max_attempts = 3
+        attempt = 0
+        while not content and attempt < max_attempts:
+            attempt += 1
+            logger.info(f"Prompt file {prompt_file} is empty. Reopening for user input (attempt {attempt}/{max_attempts}).")
+            print(Fore.CYAN + f"Reopening {prompt_path} for editing. Processing will start when you close the file." + Style.RESET_ALL)
+            if os.name == 'nt':  # Windows
+                subprocess.run([editor_command, '--wait', prompt_path], shell=True, check=True)
+            else:  # macOS and Linux
+                subprocess.run([editor_command, '--wait', prompt_path], check=True)
+            with open(prompt_path, 'r', encoding='utf-8') as f:
+                content = f.read().strip()
+
         return content if content else None
     except Exception as e:
         error_handler.handle_exception(e, "getting prompt content")
@@ -103,9 +120,16 @@ def get_prompt_content(run_dir: str, conversation_state: ConversationState) -> O
 def _read_and_edit_file(file_path: str) -> str:
     try:
         editor_command = get_editor_command()
-        subprocess.run([editor_command, '--wait', file_path])
-        with open(file_path, 'r') as f:
+        file_path = os.path.normpath(file_path)  # Normalize the path for the current OS
+        subprocess.run([editor_command, '--wait', file_path], check=True)
+        with open(file_path, 'r', encoding='utf-8') as f:
             return f.read().strip()
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error opening file in editor: {str(e)}")
+        return ""
+    except FileNotFoundError as e:
+        logger.error(f"File not found: {file_path}")
+        return ""
     except Exception as e:
         logger.error(f"Error reading and editing file: {str(e)}")
         return ""
@@ -142,19 +166,30 @@ def generate_instructions(prompt_content: str, llm_prompter, run_dir: str, conve
         'raw_instructions': raw_instructions,
         'run_dir': run_dir
     }
-    with open(os.path.join(run_dir, f"raw_instructions_turn_{conversation_state.turn_number}.md"), 'w') as f:
-        logger.debug(f"Writing raw instructions to {run_dir}/raw_instructions_turn_{conversation_state.turn_number}.md")
+    raw_instructions_file = os.path.join(run_dir, f"raw_instructions_turn_{conversation_state.turn_number}.md")
+    with open(raw_instructions_file, 'w') as f:
+        logger.debug(f"Writing raw instructions to {raw_instructions_file}")
         f.write(raw_instructions)
-    logger.info(f"Saved raw instructions to {run_dir}/raw_instructions_turn_{conversation_state.turn_number}.md")
-    logger.info("Opening raw instructions in VS Code for review and potential editing")
+    logger.info(f"Saved raw instructions to {raw_instructions_file}")
+    logger.info("Opening raw instructions in editor for review and potential editing")
     editor_command = get_editor_command()
-    subprocess.Popen([editor_command, '--wait', os.path.join(run_dir_context['run_dir'], f"raw_instructions_turn_{conversation_state.turn_number}.md")], start_new_session=True)
-    with open(os.path.join(run_dir, f"raw_instructions_turn_{conversation_state.turn_number}.md"), 'r') as f:
+    try:
+        if os.name == 'nt':  # Windows
+            subprocess.run([editor_command, '--wait', raw_instructions_file], shell=True, check=True)
+        else:  # macOS and Linux
+            subprocess.run([editor_command, '--wait', raw_instructions_file], check=True)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to open editor: {str(e)}")
+    except FileNotFoundError as e:
+        logger.error(f"Editor command not found: {editor_command}")
+        logger.error("Please ensure the editor is installed and in your system PATH")
+    
+    with open(raw_instructions_file, 'r') as f:
         edited_instructions = f.read()
     if edited_instructions != raw_instructions:
-        logger.info("Raw instructions were edited in VS Code. Using edited version.")
+        logger.info("Raw instructions were edited. Using edited version.")
         run_dir_context['raw_instructions'] = edited_instructions
-        with open(os.path.join(run_dir, f"raw_instructions_turn_{conversation_state.turn_number}.md"), 'w') as f:
+        with open(raw_instructions_file, 'w') as f:
             f.write(edited_instructions)
     logger.debug("Finished generate_instructions")
     return run_dir_context

@@ -13,7 +13,8 @@ requirements = [
     "pydantic==2.9.2",
     "colorama==0.4.6",
     "python-dotenv==1.0.1",
-    "tiktoken==0.7.0"
+    "tiktoken==0.7.0",
+    "chardet==5.2.0"
 ]
 
 setup(

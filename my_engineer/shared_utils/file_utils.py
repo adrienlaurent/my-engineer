@@ -3,6 +3,7 @@ import re
 import subprocess
 from typing import List
 import mimetypes
+import chardet
 from ..shared_utils.logger import setup_logger
 from anthropic import Anthropic
 from .pipeline_helpers import get_editor_command
@@ -57,50 +58,68 @@ def get_app_root():
         current_dir = parent
     return current_dir
 
-def get_git_tracked_files(root_dir: str) -> List[str]:
-    logger.info(f"Getting git-tracked text files from: {root_dir}")
-    if not os.path.isdir(root_dir):
-        logger.error(f"Root directory does not exist: {root_dir}")
-        return []
+def get_git_tracked_files(repo_path: str) -> List[str]:
     try:
         result = subprocess.run(
-            ['git', 'ls-files', '--cached', '--others', '--exclude-standard'],
-            capture_output=True, text=True, check=True, cwd=root_dir
+            ['git', '-C', repo_path, 'ls-files', '--cached', '--others', '--exclude-standard'],
+            capture_output=True, text=True, check=True
         )
-        all_files = [os.path.join(root_dir, file) for file in result.stdout.splitlines()]
+        files = result.stdout.splitlines()
         
-        text_files = []
-        for file_path in all_files:
-            if (is_text_file(file_path) and
-                not file_path.endswith(('package-lock.json', '.svg', '.jpg', '.jpeg', '.png', '.gif', 'file_summaries.yaml')) and
-                not any(folder in file_path for folder in ['.venv/', 'runs/', 'node_modules/'])):
-                text_files.append(file_path)
+        excluded_files = ('package-lock.json', '.svg', '.jpg', '.jpeg', '.png', '.gif', 'file_summaries.yaml')
+        excluded_folders = ('.venv', 'runs', 'node_modules')
         
-        logger.info(f"Found {len(text_files)} text files out of {len(all_files)} git-tracked files")
-        return text_files
+        filtered_files = []
+        for file in files:
+            full_path = os.path.join(repo_path, file)
+            if (not file.endswith(excluded_files) and
+                not any(folder in file.split(os.path.sep) for folder in excluded_folders) and
+                is_text_file(full_path)):
+                filtered_files.append(full_path)
+        
+        logger.info(f"Found {len(filtered_files)} text files out of {len(files)} git-tracked and untracked files")
+        return filtered_files
     except subprocess.CalledProcessError as e:
-        logger.warning(f"Error running git ls-files: {e}. Falling back to manual file listing.")
-        return _manual_file_listing(root_dir)
+        logger.error(f"Error getting git-tracked files: {e}")
+        return []
 
-def is_text_file(file_path: str) -> bool:
+def is_text_file(file_path: str, max_bytes: int = 8000) -> bool:
     """
-    Check if a file is a text file using the 'file' command.
+    Determine if a file is a text file by checking its MIME type and content.
+    
+    Args:
+    file_path (str): Path to the file to check
+    max_bytes (int): Maximum number of bytes to read for content analysis
+    
+    Returns:
+    bool: True if the file is likely a text file, False otherwise
     """
+    # Check file extension first
+    mime_type, _ = mimetypes.guess_type(file_path)
+    if mime_type and mime_type.startswith('text'):
+        return True
+    
+    # If mime type is not conclusive, check file content
     try:
-        mime_type, _ = mimetypes.guess_type(file_path)
-        if mime_type and mime_type.startswith('text'):
-            return True
-        
-        result = subprocess.run(['file', '--mime-type', '-b', file_path], capture_output=True, text=True)
-        return result.stdout.strip().startswith('text')
-    except subprocess.CalledProcessError:
-        # If 'file' command fails, fallback to checking if the file is readable as text
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                f.read(1024)  # Try to read the first 1024 bytes
-            return True
-        except UnicodeDecodeError:
+        with open(file_path, 'rb') as file:
+            raw_data = file.read(max_bytes)
+        if not raw_data:
             return False
+        
+        result = chardet.detect(raw_data)
+        if result['encoding'] is not None:
+            # Try decoding the content
+            try:
+                raw_data.decode(result['encoding'])
+                return True
+            except UnicodeDecodeError:
+                return False
+        else:
+            # If no encoding detected, it's likely not a text file
+            return False
+    except IOError:
+        # If we can't read the file, assume it's not a text file
+        return False
 
 def _manual_file_listing(root_dir: str) -> List[str]:
     excluded_folders = ['.venv', 'runs', 'node_modules']
