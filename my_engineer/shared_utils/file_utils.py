@@ -6,7 +6,7 @@ import mimetypes
 import chardet
 from ..shared_utils.logger import setup_logger
 from anthropic import Anthropic
-from .pipeline_helpers import get_editor_command
+from ..shared_utils.editor_utils import open_file_in_editor
 
 logger = setup_logger(__name__)
 
@@ -162,13 +162,3 @@ def count_tokens_for_git_tracked_files():
             logger.error(f"Error counting tokens for {file_path}: {str(e)}")
     
     logger.info(f"Token counting completed. Total tokens: {total_tokens:,} in {processed_files} files.")
-
-def open_file_in_editor(file_path: str):
-    """
-    Open a file in the configured editor (VS Code or Cursor).
-    """
-    editor_command = get_editor_command()
-    try:
-        subprocess.run([editor_command, file_path])
-    except Exception as e:
-        logger.error(f"Error opening file {file_path} in editor: {str(e)}")

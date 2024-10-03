@@ -5,6 +5,8 @@ import shutil
 from typing import Dict, Optional, List
 from datetime import datetime
 from rich.console import Console
+
+from my_engineer.shared_utils.editor_utils import get_editor_command
 from ..shared_utils.logger import setup_logger
 from ..shared_utils.git_utils import check_uncommitted_changes
 from ..shared_utils.user_input import get_user_approval
@@ -34,13 +36,6 @@ def setup_run_directory(previous_run_dir: Optional[str] = None) -> str:
     except Exception as e:
         error_handler.handle_exception(e, "setting up run directory")
         raise
-
-def get_editor_command():
-    config = get_config()
-    if config.use_cursor:
-        return 'cursor' if os.name != 'nt' else 'cursor.exe'
-    else:
-        return 'code'
 
 def resume_from_file(resume_file: str, run_dir: str) -> Dict:
     logger.info(f"Resuming from file: {resume_file}")

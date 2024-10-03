@@ -24,3 +24,4 @@ my_engineer.egg-info/
 build/
 file_summaries.yaml
 README-build.md
+.idea

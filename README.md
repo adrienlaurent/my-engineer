@@ -29,7 +29,7 @@ python3 -m my_engineer
 ## Installation (from sources)
 
 ```
-pip install -r requirements.txt
+pip install -r my_engineer/requirements.txt
 python3 -m my_engineer
 ```
 
