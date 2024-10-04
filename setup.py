@@ -19,7 +19,7 @@ requirements = [
 
 setup(
     name="my-engineer",
-    version="0.1.9",
+    version="0.1.11",
     author="Adrien Laurent",
     author_email="adrien.laurent@gmail.com",
     description="My Engineer is an AI coding assistant that is good at creating or editing multiple files at a time.",
