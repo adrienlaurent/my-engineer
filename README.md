@@ -52,12 +52,11 @@ pip install -r my_engineer/requirements.txt
 python3 -m my_engineer
 ```
 
-
-
 ## How to Use
 - My Engineer will open a blank VS Code file. Enter your instructions (e.g., "Write a complete Next.js application" or "Add comments to all files in my codebase"). **Processing will start when you close the file**.
 
 ## Things to Know
+- The first time it runs, it will create a summary of all the files in your application, it's recommended to try it on a small application first
 - My Engineer uses Claude 3.5 Sonnet to generate code change instructions, but uses Claude 3 Haiku for everything else.
 - Anthropic API requests are cached, so continuing a conversation costs only 10% of starting a new one.
 - You have 5 minutes to continue a conversation before the Anthropic cache expires.
