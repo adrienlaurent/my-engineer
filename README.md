@@ -2,8 +2,21 @@
 
 My Engineer is an AI coding assistant that excels at editing multiple files simultaneously.
 
-## GitHub Codespaces
-My Engineer works well in GitHub Codespaces. It's easy to try it out: https://github.com/codespaces
+Need help?
+- https://calendar.app.google/MSSVobwJsAQmwHnb9
+
+## Editors supported
+- vscode
+- cursor
+- pycharm
+
+## Fasted way to try it out
+My Engineer works well in GitHub Codespaces. 
+Give it a run: 
+- https://github.com/codespaces/
+- select blank template
+- `pip install my-engineer`
+- `my-engineer`
 
 ## Installation (from pip)
 Locally
@@ -26,18 +39,20 @@ python3 -m pip install my-engineer
 python3 -m my_engineer
 ```
 
-## Installation (from sources)
+## Execution (once installed with pip)
+```
+# must run at the root of your application
+my-engineer
+```
+
+## Execution (from github/sources)
 
 ```
 pip install -r my_engineer/requirements.txt
 python3 -m my_engineer
 ```
 
-## Execution
-```
-# must run at the root of your application
-my-engineer
-```
+
 
 ## How to Use
 - My Engineer will open a blank VS Code file. Enter your instructions (e.g., "Write a complete Next.js application" or "Add comments to all files in my codebase"). **Processing will start when you close the file**.
